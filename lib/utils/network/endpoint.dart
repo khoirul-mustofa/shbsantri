@@ -7,6 +7,17 @@ class Endpoint {
   static String login = '$baseUrl/auth/login';
   static String register = '$baseUrl/auth/register';
 
+  // User
+  static String user = '$baseUrl/auth/user';
+
   // News
   static String news = '$baseUrl/news';
+
+  // File
+  static String uploadImage = '$baseUrl/upload/image';
+  static String uploadPdf = '$baseUrl/upload/pdf';
+  static String uploadPpt = '$baseUrl/upload/ppt';
+
+  // Category
+  static String category = '$baseUrl/category';
 }

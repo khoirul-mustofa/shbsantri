@@ -18,21 +18,29 @@ class Footer extends StatelessWidget {
               fontSize: 14,
             ),
           ),
-          Row(
-            children: [
-              IconButton(
-                icon: Icon(Icons.facebook, color: Colors.grey[600]),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: Icon(Icons.whatshot, color: Colors.grey[600]),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: Icon(Icons.whatshot, color: Colors.grey[600]),
-                onPressed: () {},
-              ),
-            ],
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                  child: IconButton(
+                    icon: Icon(Icons.facebook, color: Colors.grey[600]),
+                    onPressed: () {},
+                  ),
+                ),
+                Expanded(
+                  child: IconButton(
+                    icon: Icon(Icons.whatshot, color: Colors.grey[600]),
+                    onPressed: () {},
+                  ),
+                ),
+                Expanded(
+                  child: IconButton(
+                    icon: Icon(Icons.whatshot, color: Colors.grey[600]),
+                    onPressed: () {},
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

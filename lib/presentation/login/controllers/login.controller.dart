@@ -1,10 +1,14 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shbsantri/infrastructure/dal/services/auth_service.dart';
+import 'package:shbsantri/infrastructure/navigation/routes.dart';
 
 class LoginController extends GetxController {
   bool isObscurePassword = false;
   bool isloadingScreen = false;
   final _authService = AuthService();
+  var emailC = TextEditingController(text: "mustofa@example.com");
+  var passwordC = TextEditingController(text: "12345678");
 
   void obscureText() {
     isObscurePassword = !isObscurePassword;
@@ -12,14 +16,17 @@ class LoginController extends GetxController {
   }
 
   void login() async {
-    print('login');
+    if (emailC.text.isEmpty || passwordC.text.isEmpty) {
+      Get.defaultDialog(middleText: 'Data Tidak Boleh Kosong');
+      return;
+    }
     isloadingScreen = true;
     update();
     final result =
-        await _authService.signInWithEmail('mustofa@example.com', '12345678');
+        await _authService.signInWithEmail(emailC.text, passwordC.text);
     result.fold(
-      (l) => Get.defaultDialog(middleText: 'Gagal Login'),
-      (r) => Get.defaultDialog(middleText: 'Berhasil Login'),
+      (l) => Get.defaultDialog(middleText: l),
+      (r) => Get.offAllNamed(Routes.DASHBOARD),
     );
   }
 }

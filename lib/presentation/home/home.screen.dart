@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,6 +9,7 @@ import 'package:shbsantri/infrastructure/components/footer.dart';
 import 'package:shbsantri/infrastructure/navigation/routes.dart';
 import 'package:shbsantri/infrastructure/theme/colors/colors_app.dart';
 import 'package:shbsantri/infrastructure/components/news_card.dart';
+import 'package:shbsantri/utils/loading/loading_app.dart';
 
 import 'controllers/home.controller.dart';
 
@@ -99,16 +101,22 @@ class HomeScreen extends GetView<HomeController> {
                   height: getButtonHeight(MySize.large),
                   child: ElevatedButton(
                     onPressed: () {
-                      Get.toNamed(Routes.LOGIN);
+                      if (controller.isNotEmptyToken) {
+                        Get.offAllNamed(Routes.DASHBOARD);
+                      } else {
+                        Get.toNamed(Routes.LOGIN);
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: lightPrimaryColor,
                     ),
                     child: Text(
-                      "Masuk",
-                      style: TextStyle(
-                          fontSize: getFontSize(MySize.medium),
-                          color: lightBackgroundColor),
+                      controller.isNotEmptyToken ? 'Dashboard' : 'Login',
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: lightBackgroundColor,
+                      ),
                     ),
                   ),
                 )
@@ -199,82 +207,68 @@ class HomeScreen extends GetView<HomeController> {
                         color: lightPrimaryFontColor),
                   ),
                   SizedBox(
-                    height: 20.h,
+                    height: 30.h,
                   ),
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      if (constraints.maxWidth > 1000) {
-                        return GridView.builder(
-                          shrinkWrap: true,
-                          itemCount: controller.news.length,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            crossAxisSpacing: 16, // Sesuaikan dengan Bootstrap
-                            mainAxisSpacing: 16, // Sesuaikan dengan Bootstrap
-                          ),
-                          itemBuilder: (context, index) {
-                            return NewsCard(
-                              imageUrl: controller.news[index].image ?? '',
-                              title: controller.news[index].title ?? '',
-                              excerpt: controller.news[index].content ?? '',
-                              category:
-                                  controller.news[index].category?.name ?? '',
-                            );
+                  controller.isloadingScreen
+                      ? const LoadingApp()
+                      : LayoutBuilder(
+                          builder: (context, constraints) {
+                            if (constraints.maxWidth > 600) {
+                              return StaggeredGrid.count(
+                                crossAxisCount:
+                                    constraints.maxWidth > 1200 ? 4 : 2,
+                                mainAxisSpacing: 12,
+                                crossAxisSpacing: 12,
+                                children: List.generate(
+                                  controller.news.length,
+                                  (index) => GestureDetector(
+                                    onTap: () {
+                                      Get.toNamed(Routes.DETAIL_NEWS,
+                                          arguments: controller.news[index]);
+                                    },
+                                    child: NewsCard(
+                                      dataNews: controller.news[index],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            } else {
+                              return ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: controller.news.length,
+                                itemBuilder: (context, index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Get.toNamed(Routes.DETAIL_NEWS,
+                                            arguments: controller.news[index]);
+                                      },
+                                      child: NewsCard(
+                                        dataNews: controller.news[index],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            }
                           },
-                        );
-                      } else if (constraints.maxWidth > 600) {
-                        return GridView.builder(
-                          shrinkWrap: true,
-                          itemCount: controller.news.length,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 16, // Sesuaikan dengan Bootstrap
-                            mainAxisSpacing: 16, // Sesuaikan dengan Bootstrap
-                          ),
-                          itemBuilder: (context, index) {
-                            return NewsCard(
-                              imageUrl: controller.news[index].image ?? '',
-                              title: controller.news[index].title ?? '',
-                              excerpt: controller.news[index].content ?? '',
-                              category:
-                                  controller.news[index].category?.name ?? '',
-                            );
-                          },
-                        );
-                      } else {
-                        return ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: controller.news.length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: NewsCard(
-                                imageUrl: controller.news[index].image ?? '',
-                                title: controller.news[index].title ?? '',
-                                excerpt: controller.news[index].content ?? '',
-                                category:
-                                    controller.news[index].category?.name ?? '',
-                              ),
-                            );
-                          },
-                        );
-                      }
-                    },
-                  ),
+                        ),
                   const Footer()
                 ],
               ),
             ),
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            controller.animateToTop();
-          },
-          child: const Icon(Icons.arrow_upward),
+        floatingActionButton: Visibility(
+          visible: controller.offsetScroll == 0.0 ? false : true,
+          child: FloatingActionButton(
+            onPressed: () {
+              controller.animateToTop();
+            },
+            child: const Icon(Icons.arrow_upward),
+          ),
         ),
       );
     });

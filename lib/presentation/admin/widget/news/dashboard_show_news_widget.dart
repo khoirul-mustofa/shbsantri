@@ -1,0 +1,2 @@
+// buat untuk detail news
+

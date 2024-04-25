@@ -19,7 +19,7 @@ class LoginScreen extends GetView<LoginController> {
                 child: Container(
               margin: const EdgeInsets.all(20),
               width: Get.width < 600 ? Get.width : 600.w,
-              height: 350.h,
+              height: 400.h,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10.r),
@@ -37,7 +37,10 @@ class LoginScreen extends GetView<LoginController> {
                     const Divider(),
                     const SizedBox(height: 20),
                     TextFormField(
+                      keyboardType: TextInputType.emailAddress,
+                      controller: controller.emailC,
                       decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
                         labelText: 'Email',
                         hintText: 'email@email.com',
                       ),
@@ -46,8 +49,11 @@ class LoginScreen extends GetView<LoginController> {
                       height: 20.h,
                     ),
                     TextFormField(
+                      keyboardType: TextInputType.visiblePassword,
+                      controller: controller.passwordC,
                       obscureText: controller.isObscurePassword ? false : true,
                       decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
                         labelText: 'Password',
                         hintText: '******',
                         suffixIcon: GestureDetector(

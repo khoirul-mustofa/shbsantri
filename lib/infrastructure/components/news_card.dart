@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get_time_ago/get_time_ago.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:shbsantri/domain/core/models/news_model.dart';
 import 'package:shbsantri/infrastructure/theme/colors/colors_app.dart';
 
 class NewsCard extends StatefulWidget {
-  final String imageUrl;
-  final String title;
-  final String excerpt;
-  final String category;
-
+  final DataNews dataNews;
   const NewsCard({
     super.key,
-    required this.imageUrl,
-    required this.title,
-    required this.excerpt,
-    required this.category,
+    required this.dataNews,
   });
 
   @override
@@ -21,6 +19,15 @@ class NewsCard extends StatefulWidget {
 
 class _NewsCardState extends State<NewsCard> {
   bool _isHovered = false;
+  var dateTime;
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      dateTime = DateTime.parse(widget.dataNews.createdAt ?? '');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,67 +47,73 @@ class _NewsCardState extends State<NewsCard> {
                     ? Matrix4.identity().scaled(1.03)
                     : Matrix4.identity(),
                 child: Image.network(
-                  widget.imageUrl,
+                  widget.dataNews.image ?? '',
                   fit: BoxFit.cover,
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              padding: const EdgeInsets.only(top: 10, left: 20),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: Chip(
-                  backgroundColor: Colors.teal[600],
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.teal[600],
+                    borderRadius: BorderRadius.circular(5.r),
+                  ),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                  label: Text(
-                    widget.category,
-                    style: const TextStyle(color: Colors.white),
+                  child: Text(
+                    widget.dataNews.category?.name ?? '',
+                    style:
+                        GoogleFonts.poppins(fontSize: 10, color: Colors.white),
                   ),
                 ),
               ),
             ),
-            // Wrap(
-            //   children: List.generate(widget.category.length, (index) {
-            //     return Chip(
-            //       backgroundColor: Colors.teal[600],
-            //       padding:
-            //           const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-            //       label: Text(
-            //         widget.category[index],
-            //         style: const TextStyle(color: Colors.white),
-            //       ),
-            //     );
-            //   }),
-            // ),
-            AnimatedPadding(
-              duration: const Duration(milliseconds: 300),
-              padding: EdgeInsets.symmetric(
-                horizontal: _isHovered ? 5 : 20,
-                vertical: 10,
-              ),
-              child: AnimatedDefaultTextStyle(
-                duration: const Duration(milliseconds: 300),
-                style: TextStyle(
-                  fontSize: _isHovered ? 20 : 18,
-                  fontWeight: FontWeight.bold,
-                  color: _isHovered ? lightPrimaryColor : lightPrimaryFontColor,
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 20, top: 10),
+                  child: SizedBox(
+                    width: 35,
+                    height: 35,
+                    child: CircleAvatar(
+                      backgroundImage:
+                          NetworkImage(widget.dataNews.user?.avatar ?? ''),
+                    ),
+                  ),
                 ),
-                child: Text(
-                  widget.title,
+                Padding(
+                  padding: const EdgeInsets.only(left: 20, top: 10),
+                  child: Text(widget.dataNews.user?.name ?? ''),
                 ),
+                const Spacer(),
+                Padding(
+                  padding: const EdgeInsets.only(right: 20),
+                  child: Text(GetTimeAgo.parse(dateTime, locale: 'in')),
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Text(
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                widget.dataNews.title ?? '',
+                style:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
               child: Text(
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
-                widget.excerpt,
+                widget.dataNews.content ?? '',
                 style: const TextStyle(
                   color: lightPrimaryFontColor,
-                  fontSize: 14,
+                  fontSize: 12,
                 ),
               ),
             ),

@@ -2,23 +2,25 @@
 
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
+import 'package:shbsantri/infrastructure/dal/daos/local_storage.dart';
 
 class CustomDioInterceptor extends Interceptor {
   Logger logger = Logger();
-  @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    options.headers["Content-Type"] = "application/json";
-    options.headers["Authorization"] = "Bearer YOUR_TOKEN_HERE";
-    super.onRequest(options, handler);
-    logger.i(
-        'Request ke: ${options.uri}\n headers: ${options.headers}\n body: ${options.data}\n method: ${options.method}\n token: ${options.headers["Authorization"]}');
+
+  Future<void> addAuthorizationHeader(RequestOptions options) async {
+    final token = await LocalStorage.getToken();
+    if (token != null) {
+      options.headers["Authorization"] = "Bearer $token";
+    }
   }
 
   @override
-  void onResponse(Response response, ResponseInterceptorHandler handler) {
-    super.onResponse(response, handler);
-    logger.i(
-        'Response dari: ${response.requestOptions.uri}\n status: ${response.statusCode}\n data: ${response.data}\n headers: ${response.headers}\n method: ${response.requestOptions.method}');
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    options.headers["Content-Type"] = "application/json";
+    // options.headers["Authorization"] = "Bearer ${LocalStorage.getToken()}";
+    super.onRequest(options, handler);
+    logger.t(
+        'Request ke: ${options.uri}\n headers: ${options.headers}\n body: ${options.data}\n method: ${options.method}\n token: ${options.headers["Authorization"]}');
   }
 
   @override
@@ -26,5 +28,6 @@ class CustomDioInterceptor extends Interceptor {
     // Handle error
     super.onError(err, handler);
     logger.e(err);
+    // logger.e(err.response);
   }
 }
