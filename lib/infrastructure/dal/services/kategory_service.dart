@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:fpdart/src/either.dart';
 import 'package:shbsantri/domain/core/interfaces/category_interface.dart';
 import 'package:shbsantri/domain/core/models/category_model.dart';
+import 'package:shbsantri/utils/logger/instance_logger.dart';
 import 'package:shbsantri/utils/network/endpoint.dart';
 
 class CategoryService implements CategoryInterface {
@@ -13,15 +14,14 @@ class CategoryService implements CategoryInterface {
     try {
       var response =
           await dio.post(Endpoint.category, data: {"name": categoryName});
-
-      if (response.statusCode == 200) {
-        CategoryModel category = CategoryModel.fromJson(response.data['data']);
-        return Right(category);
-      } else {
-        return const Left('Failed to add category');
-      }
-    } catch (e) {
-      return Left(e);
+      CategoryModel category = CategoryModel.fromJson(response.data['data']);
+      return Right(category);
+    } on DioException catch (e) {
+      logger.e(e);
+      return Left(e.response?.data['errors']['name'][0]);
+    } catch (l) {
+      logger.e(l);
+      return Left(l);
     }
   }
 
@@ -50,9 +50,24 @@ class CategoryService implements CategoryInterface {
   }
 
   @override
-  Future<Either<dynamic, CategoryModel>> updateCategory(
-      int categoryId, String newCategoryName) {
-    // TODO: implement updateCategory
-    throw UnimplementedError();
+  Future<Either<String, CategoryModel>> updateCategory(
+      int categoryId, String newName) async {
+    try {
+      Map<String, dynamic> data = {
+        'name': newName,
+      };
+
+      var response =
+          await dio.patch('${Endpoint.category}/$categoryId', data: data);
+
+      if (response.statusCode == 200) {
+        return Right(response.data);
+      } else {
+        return Left(
+            'Failed to update category. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      return Left('Error: $e');
+    }
   }
 }

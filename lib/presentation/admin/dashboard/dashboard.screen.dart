@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shbsantri/infrastructure/theme/colors/colors_app.dart';
 import 'package:shbsantri/presentation/admin/dashboard/controllers/news/dashboard.controller.dart';
+import 'package:shbsantri/presentation/admin/widget/category/dashboard_add_category_widget.dart';
 import 'package:shbsantri/presentation/admin/widget/category/dashboard_list_category_widget.dart';
 import 'package:shbsantri/presentation/admin/widget/news/dashboard_list_news_widget.dart';
 import 'package:shbsantri/presentation/admin/widget/news/dashboard_add_news_widget.dart';
@@ -149,7 +150,30 @@ class DashboardScreen extends GetView<DashboardController> {
         ],
       );
     } else {
-      return DashboardListCategoryWidget();
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'All Category',
+            style: GoogleFonts.poppins(fontSize: 18),
+          ),
+          SizedBox(
+            height: 20.h,
+          ),
+          OutlinedButton.icon(
+            onPressed: () {
+              Get.dialog(DashboardAddCategoryWidget())
+                  .whenComplete(() => print('done'));
+            },
+            icon: const Icon(Icons.add),
+            label: const Text('Add Category'),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          DashboardListCategoryWidget(),
+        ],
+      );
     }
   }
 }

@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:shbsantri/domain/core/models/user_model.dart';
 import 'package:shbsantri/infrastructure/dal/services/auth_service.dart';
 import 'package:shbsantri/utils/logger/instance_logger.dart';
+import 'package:shbsantri/utils/network/endpoint.dart';
 
 class DashboardController extends GetxController {
   Color colorbgblue = const Color(0xff273142);
@@ -47,6 +48,6 @@ class DashboardController extends GetxController {
   }
 
   newTab() {
-    html.window.open('http://localhost:36021', 'new tab');
+    html.window.open('https://flutter.dev', 'new tab');
   }
 }

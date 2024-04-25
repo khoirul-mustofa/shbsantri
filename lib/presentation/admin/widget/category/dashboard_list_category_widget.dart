@@ -3,20 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shbsantri/presentation/admin/dashboard/controllers/category/dashboard.list.category.controller.dart';
+import 'package:shbsantri/presentation/admin/dashboard/controllers/category/category.controller.dart';
+import 'package:shbsantri/presentation/admin/widget/category/dashboard_add_category_widget.dart';
 import 'package:shbsantri/utils/loading/loading_app.dart';
 
 class DashboardListCategoryWidget extends StatelessWidget {
   DashboardListCategoryWidget({super.key});
-  var controller = Get.put(DashboardListCategoryController());
+  var controller = Get.put(CategoryController());
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<DashboardListCategoryController>(builder: (controller) {
+    return GetBuilder<CategoryController>(builder: (controller) {
       return Column(
         children: [
           Container(
             padding: const EdgeInsets.all(20),
-            height: Get.height * 0.7,
+            height: Get.height * 0.8,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.r),
               color: Colors.white,
@@ -65,7 +66,7 @@ class DashboardListCategoryWidget extends StatelessWidget {
                       ),
                       const Divider(),
                       SizedBox(
-                        height: Get.height * 0.50,
+                        height: Get.height * 0.69,
                         child: ListView.builder(
                           physics: const ScrollPhysics(),
                           itemCount: controller.categories.length,
@@ -89,7 +90,13 @@ class DashboardListCategoryWidget extends StatelessWidget {
                                     children: [
                                       Expanded(
                                         child: IconButton(
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            controller.edit(
+                                                controller
+                                                    .categories[index].id!,
+                                                controller
+                                                    .categories[index].name!);
+                                          },
                                           icon: const Icon(
                                             Icons.edit,
                                             color: Colors.yellow,
@@ -103,10 +110,6 @@ class DashboardListCategoryWidget extends StatelessWidget {
                             );
                           },
                         ),
-                      ),
-                      const Divider(),
-                      const SizedBox(
-                        height: 20,
                       ),
                     ],
                   ),
